@@ -168,7 +168,7 @@
       var $photosList = $('.js-photos-list')
 
       list.forEach(function (fileName, i) {
-        setTimeout(renderImage.bind(this, fileName), 1000 * i)
+        setTimeout(renderImage.bind(this, fileName), 300 * i)
       })
 
       function renderImage(fileName) {
