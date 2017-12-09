@@ -21,6 +21,7 @@
 
       body {
         padding: 10px 10px;
+        background: #444;
       }
 
       h1 {
@@ -28,14 +29,22 @@
         font-family: 'Roboto Slab';
         font-size: 40px;
         text-align: center;
+        color: #fff;
       }
 
       .photos-list {
         text-align: center;
       }
       .photo-wrapper {
-        width: 1000px;
         margin: 60px auto;
+      }
+
+      .photo {
+        box-shadow: 0 3px 36px rgba(0,0,0,0.3);
+      }
+
+      .photo-before {
+        box-shadow: 0 2px 3px rgba(0,0,0,0.1);
       }
 
       .photo-before,
@@ -44,7 +53,8 @@
       .photo-before {
         display: none;
       }
-      .photo-after {
+      .photo-after img {
+        box-shadow: 0 3px 36px rgba(0,0,0,0.3);
       }
 
       /* Images compare main container */
@@ -97,17 +107,7 @@
         top: 50%;
         margin-left: -22px;
         margin-top: -22px;
-        border: 3px solid white;
-        -webkit-border-radius: 1000px;
-        -moz-border-radius: 1000px;
-        border-radius: 1000px;
-        -webkit-box-shadow: 0 0 12px rgba(51, 51, 51, 0.5);
-        -moz-box-shadow: 0 0 12px rgba(51, 51, 51, 0.5);
-        box-shadow: 0 0 12px rgba(51, 51, 51, 0.5);
         z-index: 3;
-        background: rgb(0, 0, 0);
-        background: rgba(0, 0, 0, 0.7);
-        cursor: pointer;
       }
 
       /* Drag handle arrows */
@@ -123,46 +123,15 @@
       .images-compare-left-arrow {
         border-right: 6px solid white;
         left: 50%;
-        margin-left: -17px;
+        margin-left: -13px;
       }
 
       .images-compare-right-arrow {
         border-left: 6px solid white;
-        right: 50%;
-        margin-right: -17px;
+        left: 50%;
+        margin-left: 8px;
       }
 
-      /* Label */
-      .images-compare-label {
-        font-family: sans-serif;
-        text-transform: uppercase;
-        font-weight: bold;
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 1;
-        color: rgb(0, 0, 0);
-        color: rgba(0, 0, 0, 0.4);
-        background: rgb(255, 255, 255);
-        background: rgba(255, 255, 255, 0.7);
-        padding: 10px;
-        border-radius: 5px;
-        pointer-events: none;
-        display: none;
-      }
-
-      .images-compare-container .images-compare-label {
-        display: inherit;
-      }
-
-      .images-compare-before .images-compare-label {
-        left: 10px;
-      }
-
-      .images-compare-after .images-compare-label {
-        left: auto;
-        right: 10px;
-      }
     </style>
   </head>
   <body>
@@ -199,21 +168,36 @@
       var $photosList = $('.js-photos-list')
 
       list.forEach(function (fileName, i) {
+        setTimeout(renderImage.bind(this, fileName), 1000 * i)
+      })
+
+      function renderImage(fileName) {
         var $el = $('<div class="photo-wrapper">'
-                  +    '<div class="js-photo">'
-                  +      '<div class="photo-before"><img src="'+ fileName +'1.jpg" alt="Before"></div>'
-                  +      '<div class="photo-after"><img src="'+ fileName +'2.jpg" alt="After"></div>'
+                  +    '<div class="photo js-photo">'
+                  +      '<div class="photo-before"><img src="'+ fileName +'1-preview.jpg" alt="Before"></div>'
+                  +      '<div class="photo-after"><img src="'+ fileName +'2-preview.jpg" alt="After"></div>'
                   +    '</div>'
                   + '</div>')
 
         $photosList.append($el)
 
-        setTimeout(function() {
+        var beforeDeferred = $.Deferred()
+        var afterDeferred = $.Deferred()
+
+        $.when(beforeDeferred, afterDeferred).done(function () {
           $el.find('.js-photo').imagesCompare({
             interactionMode: 'mousemove'
           })
-        }, (i + 1) * 100)
-      })
+        })
+
+        $el.find('.photo-before img').on('load', function () {
+          beforeDeferred.resolve()
+        })
+
+        $el.find('.photo-after img').on('load', function () {
+          afterDeferred.resolve()
+        })
+      }
 
     </script>
   </body>
