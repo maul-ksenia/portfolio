@@ -26,46 +26,194 @@
       h1 {
         margin: 30px 0 50px;
         font-family: 'Roboto Slab';
-        font-size: 50px;
+        font-size: 40px;
         text-align: center;
       }
 
-      img {
-        display: block;
-        width: 100%;
-        max-width: 1200px;
+      .photos-list {
+        text-align: center;
+      }
+      .photo-wrapper {
+        width: 1000px;
         margin: 60px auto;
+      }
+
+      .photo-before,
+      .photo-after {
+      }
+      .photo-before {
+        display: none;
+      }
+      .photo-after {
+      }
+
+      /* Images compare main container */
+      .images-compare-container {
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Images compare front element */
+      .images-compare-before {
+        will-change: clip;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      /* Images compare back element */
+      .images-compare-after {
+        pointer-events: none;
+      }
+
+      /* Responsive image settings */
+      .images-compare-before img, .images-compare-after img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Separator (thin vertical blank line) */
+      .images-compare-separator {
+        position: absolute;
+        background: white;
+        height: 100%;
+        width: 1px;
+        z-index: 4;
+        left: 0;
+        top: 0;
+      }
+
+      /* Drag handle (circle) */
+      .images-compare-handle {
+        height: 38px;
+        width: 38px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -22px;
+        margin-top: -22px;
+        border: 3px solid white;
+        -webkit-border-radius: 1000px;
+        -moz-border-radius: 1000px;
+        border-radius: 1000px;
+        -webkit-box-shadow: 0 0 12px rgba(51, 51, 51, 0.5);
+        -moz-box-shadow: 0 0 12px rgba(51, 51, 51, 0.5);
+        box-shadow: 0 0 12px rgba(51, 51, 51, 0.5);
+        z-index: 3;
+        background: rgb(0, 0, 0);
+        background: rgba(0, 0, 0, 0.7);
+        cursor: pointer;
+      }
+
+      /* Drag handle arrows */
+      .images-compare-left-arrow, .images-compare-right-arrow {
+        width: 0;
+        height: 0;
+        border: 6px inset transparent;
+        position: absolute;
+        top: 50%;
+        margin-top: -6px;
+      }
+
+      .images-compare-left-arrow {
+        border-right: 6px solid white;
+        left: 50%;
+        margin-left: -17px;
+      }
+
+      .images-compare-right-arrow {
+        border-left: 6px solid white;
+        right: 50%;
+        margin-right: -17px;
+      }
+
+      /* Label */
+      .images-compare-label {
+        font-family: sans-serif;
+        text-transform: uppercase;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+        color: rgb(0, 0, 0);
+        color: rgba(0, 0, 0, 0.4);
+        background: rgb(255, 255, 255);
+        background: rgba(255, 255, 255, 0.7);
+        padding: 10px;
+        border-radius: 5px;
+        pointer-events: none;
+        display: none;
+      }
+
+      .images-compare-container .images-compare-label {
+        display: inherit;
+      }
+
+      .images-compare-before .images-compare-label {
+        left: 10px;
+      }
+
+      .images-compare-after .images-compare-label {
+        left: auto;
+        right: 10px;
       }
     </style>
   </head>
   <body>
     <h1>Oksana Betskykh portfolio</h1>
-    <img src="5.jpg" />
-    <img src="w1.jpg" />
-    <img src="1.jpg" />
-    <img src="^414F1B7FFD9DF7DA6580FCDD364620DCF24BF50B51AFB0A1C5^pimgpsh_fullsize_distr.jpg" />
-    <img src="6.jpg" />
-    <img src="2.jpg" />
-    <img src="7.jpg" />
-    <img src="^F10DA0214A8A958BAD371C4A917BA96E1D832A9CF6A866AC6C^pimgpsh_fullsize_distr.jpg" />
-    <img src="retouch_134.jpg" />
-    <img src="3.jpg" />
-    <img src="julie.jpg" />
-    <img src="az1_2.jpg" />
-    <img src="vera3.jpg" />
-    <img src="Re_135.jpg" />
-    <img src="4.jpg" />
-    <img src="P_Dre.jpg" />
-    <img src="^BC1B188973FE6843297232B1C99D45FCB701E51BF35DB9B18C^pimgpsh_fullsize_distr.jpg" />
-    <img src="viv.jpg" />
-    <img src="portrait_6.jpg" />
-    <img src="Untitled-1.jpg" />
-    <img src="sisi.jpg" />
 
-    <script src="jquery-3.2.1.min.js"></script>
+    <div class="photos-list js-photos-list"></div>
+
+
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="hammer.min.js"></script>
+    <script type="text/javascript" src="jquery.images-compare.min.js"></script>
+
     <script>
-      
+      var list = [
+        'a',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+        'o',
+        'p',
+        'r',
+        's',
+        't',
+        'u',
+        'w',
+        'x',
+        'y',
+        'z',
+      ]
+      var $photosList = $('.js-photos-list')
 
+      list.forEach(function (fileName, i) {
+        var $el = $('<div class="photo-wrapper">'
+                  +    '<div class="js-photo">'
+                  +      '<div class="photo-before"><img src="'+ fileName +'1.jpg" alt="Before"></div>'
+                  +      '<div class="photo-after"><img src="'+ fileName +'2.jpg" alt="After"></div>'
+                  +    '</div>'
+                  + '</div>')
+
+        $photosList.append($el)
+
+        setTimeout(function() {
+          $el.find('.js-photo').imagesCompare({
+            interactionMode: 'mousemove'
+          })
+        }, (i + 1) * 100)
+      })
 
     </script>
   </body>
